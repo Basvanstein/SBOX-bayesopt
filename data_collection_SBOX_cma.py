@@ -102,7 +102,7 @@ if __name__ == '__main__':
     opts =  ["MIES"]#, "OnePlusOne_Cholesky_CMA"
 
     iids = list(range(1,6)) + list(range(101,111))
-    dims = [5,20, 40]
+    dims = [5,20]
     tpyes = [ioh.ProblemClass.SBOX, ioh.ProblemClass.BBOB]#in ioh < 0.3.9, problemClass -> problemType
     
     args = product(algnames, models, aqs, opts, fids, dims, tpyes)
