@@ -11,6 +11,9 @@ import os
 
 from modcma import ModularCMAES
 
+from bayes_optim import BO, RealSpace
+from bayes_optim.surrogate import GaussianProcess, RandomForest
+
 
 def runParallelFunction(runFunction, arguments):
     """
@@ -31,36 +34,48 @@ def runParallelFunction(runFunction, arguments):
     return results
 
 class Algorithm_Evaluator():
-    def __init__(self, optimizer):
-        self.alg = optimizer
+    def __init__(self, alg, model, aq, opt):
+        self.alg = alg
+        self.model_choice = model
+        self.aq = aq
+        self.opt = opt
+
 
     def __call__(self, func, seed):
         np.random.seed(int(seed))
-        if self.alg == 'CMAES':
-            c = ModularCMAES(func, d=func.meta_data.n_variables, budget=int(10000*func.meta_data.n_variables))
-            c.run()
-        elif self.alg == 'CMAES_center':
-            c = ModularCMAES(func, d=func.meta_data.n_variables, budget=int(10000*func.meta_data.n_variables), x0 = np.zeros((func.meta_data.n_variables,1)))
-            c.run()
-        elif self.alg == 'CMAES_sat':
-            c = ModularCMAES(func, d=func.meta_data.n_variables, budget=int(10000*func.meta_data.n_variables), bound_correction='saturate')
-            c.run()
-        elif self.alg == 'CMAES_sat_center':
-            c = ModularCMAES(func, d=func.meta_data.n_variables, budget=int(10000*func.meta_data.n_variables), x0 = np.zeros((func.meta_data.n_variables,1)), bound_correction='saturate')
-            c.run()
+        if self.alg == "BO":
+            dim = func.meta_data.n_variables
+            space = RealSpace([-5, 5]) * dim  # create the search space
+
+            if self.model_choice == "GP":
+                model = GaussianProcess(space)
+            elif self.model_choice == "RF":
+                model = RandomForest(levels=space.levels)
+            
+            opt = BO(
+                search_space=space,
+                obj_fun=func,
+                model=model,
+                DoE_size=1000,                         # number of initial sample points
+                max_FEs=10000*dim,                         # maximal function evaluation
+                acquisition_fun=self.aq,
+                acquisition_optimization={"optimizer": self.opt, 'max_FEs': 10000*dim},
+                verbose=True
+            )
+            opt.run()
         else: 
             print(f"{self.alg} Does not exist! ________")
         
 def run_optimizer(temp):
     
-    algname, fid, dim, type_ = temp
+    algname, model, aq, opt, fid, dim, type_ = temp
 
     # print(algname, fid)
     
-    algorithm = Algorithm_Evaluator(algname)
+    algorithm = Algorithm_Evaluator(algname, model, aq, opt)
 
 
-    logger = ioh.logger.Analyzer(root="/datanaco/vermettendl/SBOX/", folder_name=f"{algname}_F{fid}_{dim}D_{type_.name}", algorithm_name=f"{algname}_{type_.name}", )
+    logger = ioh.logger.Analyzer(root="data/", folder_name=f"{algname}-{model}-{aq}-{opt}_F{fid}_{dim}D_{type_.name}", algorithm_name=f"{algname}-{model}-{aq}-{opt}_{type_.name}", )
 
     for iid in list(range(1,6)) + list(range(101,111)):
         func = ioh.get_problem(fid, dimension=dim, instance=iid, problem_class=type_) #in ioh < 0.3.9, problem_class -> problem_type
@@ -79,11 +94,15 @@ if __name__ == '__main__':
 
     fids = range(1,25)
     
-    algnames = ['CMAES_sat', 'CMAES_sat_center', 'CMAES', 'CMAES_center']
+    algnames = ['BO']
+    models = ["RP"] #, "GP"
+    aqs = ["EI"] #,"MGFI", "UCB", "EpsilonPI"
+    opts =  ["MIES"]#, "OnePlusOne_Cholesky_CMA"
+
     iids = list(range(1,6)) + list(range(101,111))
     dims = [5,20, 40]
     tpyes = [ioh.ProblemClass.SBOX, ioh.ProblemClass.BBOB]#in ioh < 0.3.9, problemClass -> problemType
     
-    args = product(algnames, fids, dims, tpyes)
+    args = product(algnames, models, aqs, opts, fids, dims, tpyes)
 
     runParallelFunction(run_optimizer, args)
