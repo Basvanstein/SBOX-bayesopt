@@ -86,6 +86,7 @@ def run_optimizer(temp):
             algorithm(func, iid)
         except:
             print(f"Failed run on {fid} {iid}")
+        print(f"Done with run {model}-{aq}-{opt} {fid} {iid}")
         func.reset()
     logger.close()
 
