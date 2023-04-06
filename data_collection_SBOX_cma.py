@@ -81,10 +81,10 @@ def run_optimizer(temp):
         func = ioh.get_problem(fid, dimension=dim, instance=iid, problem_class=type_) #in ioh < 0.3.9, problem_class -> problem_type
         # func.enforce_bounds(np.inf)
         func.attach_logger(logger)
-        try:
-            algorithm(func, iid)
-        except:
-            print(f"Failed run on {fid} {iid}")
+        #try:
+        algorithm(func, iid)
+        #except:
+        #    print(f"Failed run on {fid} {iid}")
         func.reset()
     logger.close()
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     fids = range(1,25)
     
     algnames = ['BO']
-    models = ["RP"] #, "GP"
+    models = ["RF"] #, "GP"
     aqs = ["EI"] #,"MGFI", "UCB", "EpsilonPI"
     opts =  ["MIES"]#, "OnePlusOne_Cholesky_CMA"
 
