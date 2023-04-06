@@ -60,7 +60,7 @@ class Algorithm_Evaluator():
                 max_FEs=10000*dim,                         # maximal function evaluation
                 acquisition_fun=self.aq,
                 acquisition_optimization={"optimizer": self.opt, 'max_FEs': 10000*dim},
-                verbose=True
+                verbose=False
             )
             opt.run()
         else: 
