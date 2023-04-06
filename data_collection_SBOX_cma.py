@@ -39,7 +39,7 @@ class Algorithm_Evaluator():
         self.model_choice = model
         self.aq = aq
         self.opt = opt
-        self.budget = 100 #times dim
+        self.budget = 50 #times dim
 
 
     def __call__(self, func, seed):
@@ -57,7 +57,7 @@ class Algorithm_Evaluator():
                 search_space=space,
                 obj_fun=func,
                 model=model,
-                DoE_size=50,                         # number of initial sample points
+                DoE_size=10*dim,                         # number of initial sample points
                 max_FEs=self.budget*dim,                         # maximal function evaluation
                 acquisition_fun=self.aq,
                 acquisition_optimization={"optimizer": self.opt, 'max_FEs': 5000*dim},

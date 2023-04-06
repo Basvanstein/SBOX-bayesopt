@@ -27,61 +27,29 @@ Genetic and Evolutionary Computation Conference}{July 10--14,
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title[Performance of modular CMA-ES on strict box constrained problems]{Performance of modular CMA-ES on strict box constrained problems in the SBOX-COST benchmarking suite} %\\example submission for a short paper in the SBOX-COST workshop
+\title[Performance of Bayesian Optimizers on Strict Box Constrained Problems]{Performance of Bayesian Optimizers on Strict Box Constrained Problems in the SBOX-COST Benchmarking Suite} %\\example submission for a short paper in the SBOX-COST workshop
 
 %%
 %% authors
-\author{Diederick Vermetten}
+\author{Bas van Stein}
 \affiliation{%
     \institution{LIACS, Leiden University}
     \streetaddress{Niels Bohrweg 1}
     \city{Leiden}
     \postcode{2333}
     \country{The Netherlands}}
-\email{d.l.vermetten@liacs.leidenuniv.nl}
-\orcid{0000-0003-3040-7162}
+\email{b.van.stein@liacs.leidenuniv.nl}
+\orcid{0000-0002-0013-7969}
 
-\author{Olaf Mersmann}
-\affiliation{%
-  \institution{TH Köln}
-  \city{Köln}
-  \country{Germany}}
-\email{olaf.mersmann@th-koeln.de}
-\orcid{0000-0002-7720-4939}
-
-\author{Manuel López-Ibáñez}
-\affiliation{%
-    \institution{University of Manchester}
-    \city{Manchester}
-    \country{UK}}
-\email{manuel.lopez-ibanez@manchester.ac.uk}
-\orcid{0000-0001-9974-1295}
-
-\author{Youngmin Kim}
- \affiliation{%
-    \institution{University of Manchester}
-    \city{Manchester}
-    \country{UK}}
-\email{youngmin.kim@manchester.ac.uk}
-\orcid{0000-0002-7699-6532}
-
-\author{Richard Allmendinger}
- \affiliation{%
-    \institution{University of Manchester}
-    \city{Manchester}
-    \country{UK}}
-\email{richard.allmendinger@manchester.ac.uk}
-\orcid{0000-0003-1236-3143}
-
-\author{Anna V. Kononova}
+\author{Thomas B{\"a}ck}
 \affiliation{%
       \institution{LIACS, Leiden University}
       \streetaddress{Niels Bohrweg 1}
       \city{Leiden}
       \postcode{2333}
       \country{The Netherlands}}
-\email{a.kononova@liacs.leidenuniv.nl}
-\orcid{0000-0002-4138-7024}
+\email{t.h.w.baeck@liacs.leidenuniv.nl}
+\orcid{0000-0001-6768-1478}
 
 %%
 %% By default, the full list of authors will be used in the page
@@ -93,7 +61,10 @@ Genetic and Evolutionary Computation Conference}{July 10--14,
 
 %%
 \begin{abstract}
-This paper evaluates several versions of CMA-ES on the strict-box-constrained  benchmarking suite (SBOX-COST). SBOX-COST is a variant of the well-known BBOB benchmark suite that enforces box-constraints by returning an invalid evaluation value for solutions violating any of the constraints on the bounds of decision variables. We compare four variants of CMA-ES: two initialization methods (centre of mass near the origin versus uniformly at random) and two box-constraint handling methods (saturate versus no handling at all). Contrary to what may be expected, handling box-constraints by saturation is not always better that not handling them at all. However, over all BBOB functions, saturation is better than not handling and the difference increases with the number of dimensions. Enforcing sbox-constraints also has a clear negative effect on the performance of classical CMA-ES (with uniform random initialization and no constraint handling), especially as problem dimensionality increases.
+This paper evaluates several versions of Bayesian Optimization on the strict-box-constrained benchmarking suite (SBOX-COST). 
+SBOX-COST is a variant of the well-known BBOB benchmark suite that enforces box-constraints by returning an invalid evaluation value for solutions violating any of the constraints on the bounds of decision variables. 
+We compare X variants of Bayesian Optimization: 
+TODO: add observations, rewrite slightly
 \end{abstract}
 
 
@@ -119,12 +90,10 @@ This paper evaluates several versions of CMA-ES on the strict-box-constrained  b
 \ccsdesc[500]{Theory of computation~Theory of randomized search heuristics}
 \ccsdesc[500]{Theory of computation~Algorithm design techniques}
 
-\ccsdesc[300]{Mathematics of computing~Evolutionary algorithms}
-\ccsdesc[500]{Theory of computation~Discrete optimization}
 
 %%
 %% Keywords.
-\keywords{keyword, keyword}
+\keywords{Bayesian Optimization, Box Constrained Optimization, Algorithm Performance}
 
 %%
 %% This command processes the author and affiliation and title
@@ -151,17 +120,7 @@ For our benchmarking, we make use of the newly proposed Strict Box-Constraint Op
     \item Location of the optima: SBOX-COST has optima across instances located uniformly within the full domain -- except for, as in BBOB, F4, F8, F9, F19, F20, F24 which have optima uniform in $[-4,4]^d$ and F5 - in some corners of $[-5,5]^d$.
 \end{itemize} 
 
-\subsection{Modular CMA-ES}
-To investigate several commonly and less commonly used configurations and variants of the CMA-ES algorithm~\cite{Hansen.1996}, we use the Modular CMA-ES framework~\cite{van2017algorithm,de2021tuning}. The framework is open-source and available\footnote{\url{https://github.com/IOHprofiler/ModularCMAES}} as part of the IOHprofiler \cite{doerr2018iohprofiler} environment. 
-
-Modular CMA-ES framework is currently made up of $11$ modules, each having a number of implemented options: Active update (2), Elitism (2), Orthogonal Sampling (2), Sequential Selection (2), Threshold Convergence (2), Step-Size adaptation (7), Mirrored Sampling (3), Quasi-Gaussian Sampling (3), Recombination Weights (2), Restart Strategy (3) and Boundary Correction (6). The framework allows a total of $72.576$ possible configurations. A detailed description of each module and their settings can be found in~\cite{de2021tuning}.
-
-In this paper, to investigate the \textit{effect of the introduction of strict boundaries} on the BBOB problems in the SBOX-COST benchmarking suite, we compare the behaviour of 4 different variants withing modular CMA-ES by considering:
-\begin{itemize}
-    \item two \textit{initialization} methods for the centre of mass (set to the origin of the space, \texttt{centre}, or set uniformly at \texttt{random} in the domain),
-    \item enabling or disabling the method for dealing with \textit{box-constraints} (\texttt{saturate}, which places the infeasible coordinates to the closest corresponding bound or \texttt{none} which allows infeasible points ). 
-\end{itemize} 
-All \textit{other modules} and parameter settings are set to their defaults specified in~\cite{de2021tuning}. 
+\subsection{Bayesian Optimization}
 
 \begin{figure}[!tb]
  \centering
