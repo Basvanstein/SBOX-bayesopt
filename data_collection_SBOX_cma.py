@@ -28,7 +28,7 @@ def runParallelFunction(runFunction, arguments):
     
 
     arguments = list(arguments)
-    p = Pool(min(100, len(arguments)))
+    p = Pool(min(32, len(arguments)))
     results = p.map(runFunction, arguments)
     p.close()
     return results
@@ -86,7 +86,7 @@ def run_optimizer(temp):
             algorithm(func, iid)
         except:
             print(f"Failed run on {fid} {iid}")
-        print(f"Done with run {model}-{aq}-{opt} {fid} {iid}")
+        print(f"Done with run {model}-{aq}-{opt} {fid} {iid}\n")
         func.reset()
     logger.close()
 
