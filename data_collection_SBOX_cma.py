@@ -28,7 +28,7 @@ def runParallelFunction(runFunction, arguments):
     
 
     arguments = list(arguments)
-    p = Pool(min(32, len(arguments)))
+    p = Pool(min(50, len(arguments)))
     results = p.map(runFunction, arguments)
     p.close()
     return results
@@ -39,7 +39,7 @@ class Algorithm_Evaluator():
         self.model_choice = model
         self.aq = aq
         self.opt = opt
-        self.budget = 50 #times dim
+        self.budget = 100 #times dim
 
 
     def __call__(self, func, seed):
@@ -57,10 +57,10 @@ class Algorithm_Evaluator():
                 search_space=space,
                 obj_fun=func,
                 model=model,
-                DoE_size=10*dim,                         # number of initial sample points
-                max_FEs=self.budget*dim,                         # maximal function evaluation
+                DoE_size=10,                         # number of initial sample points
+                max_FEs=self.budget,                         # maximal function evaluation
                 acquisition_fun=self.aq,
-                acquisition_optimization={"optimizer": self.opt, 'max_FEs': 5000*dim},
+                acquisition_optimization={"optimizer": self.opt, 'max_FEs': 1000*dim},
                 verbose=False
             )
             opt.run()
@@ -97,11 +97,9 @@ if __name__ == '__main__':
     fids = range(1,25)
     
     algnames = ['BO']
-    models = ["RF"] #, "GP"
-    aqs = ["EI"] #,"MGFI", "UCB", "EpsilonPI"
-    opts =  ["MIES"]#, "OnePlusOne_Cholesky_CMA"
-
-    iids = list(range(1,6)) + list(range(101,111))
+    models = ["GP"] #, "RF"
+    aqs = ["EI", "MGFI", "UCB", "EpsilonPI"]
+    opts =  ["OnePlusOne_Cholesky_CMA"]#, "MIES"
     dims = [5,20]
     tpyes = [ioh.ProblemClass.SBOX, ioh.ProblemClass.BBOB]#in ioh < 0.3.9, problemClass -> problemType
     
