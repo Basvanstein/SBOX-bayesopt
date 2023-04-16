@@ -76,7 +76,7 @@ def run_optimizer(temp):
     algorithm = Algorithm_Evaluator(algname, model, aq, opt)
 
 
-    logger = ioh.logger.Analyzer(root="data/", folder_name=f"{algname}-{model}-{aq}-{opt}_F{fid}_{dim}D_{type_.name}", algorithm_name=f"{algname}-{model}-{aq}-{opt}_{type_.name}", )
+    logger = ioh.logger.Analyzer(root="data/", folder_name=f"{algname}-{model}-{aq}_F{fid}_{dim}D_{type_.name}", algorithm_name=f"{algname}-{model}-{aq}_{type_.name}", )
 
     for iid in list(range(1,6)) + list(range(101,111)):
         func = ioh.get_problem(fid, dimension=dim, instance=iid, problem_class=type_) #in ioh < 0.3.9, problem_class -> problem_type
@@ -97,9 +97,9 @@ if __name__ == '__main__':
     fids = range(1,25)
     
     algnames = ['BO']
-    models = ["GP"] #, "RF"
+    models = ["GP", "RF"]
     aqs = ["EI", "MGFI", "UCB", "EpsilonPI"]
-    opts =  ["OnePlusOne_Cholesky_CMA"]#, "MIES"
+    opts =  ["OnePlusOne_Cholesky_CMA"]
     dims = [5,20]
     tpyes = [ioh.ProblemClass.SBOX, ioh.ProblemClass.BBOB]#in ioh < 0.3.9, problemClass -> problemType
     
